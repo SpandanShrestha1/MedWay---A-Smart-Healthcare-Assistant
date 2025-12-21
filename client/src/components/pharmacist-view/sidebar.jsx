@@ -1,14 +1,14 @@
-import {
-  ChartNoAxesCombined,
-  LayoutDashboard,
-  ShoppingBasket,
-  Truck,
-} from "lucide-react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sheet, SheetHeader, SheetTitle, SheetContent } from "../ui/sheet";
-
 import { pharmacistSidebarMenuItems } from "../../constants/pharmacistSidebarMenuItems";
+import {
+  LayoutDashboard,
+  Building2,
+  Pill,
+  ShoppingCart,
+  ChartNoAxesCombined,
+} from "lucide-react";
 
 function MenuItems({ setOpen }) {
   const navigate = useNavigate();
@@ -55,6 +55,7 @@ function PharmacistSideBar({ open, setOpen }) {
           <ChartNoAxesCombined size={30} />
           <h1 className="text-2xl font-extrabold">Pharmacist Panel</h1>
         </div>
+        <MenuItems />
       </aside>
     </Fragment>
   );
