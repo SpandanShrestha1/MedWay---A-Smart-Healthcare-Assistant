@@ -6,6 +6,13 @@ import CartModel from "../models/Cart.js";
 import CartItemModel from "../models/CartItem.js";
 import OrderModel from "../models/Order.js";
 import OrderItemModel from "../models/OrderItem.js";
+import AddressModel from "../models/Address.js";
+import PharmacyWithdrawlModel from "../models/PharmacyWithdrawl.js";
+import PaymentMethodModel from "../models/PaymentMethod.js";
+import RoleRequestModel from "../models/RoleRequest.js";
+import RequestDocumentModel from "../models/RequestDocument.js";
+import PlatformConfigModel from "../models/PlatformConfig.js";
+import NotificationPreferenceModel from "../models/NotificationPreference.js";
 
 const sequelize = new Sequelize("healthcare_db", "root", "$admin12345", {
   host: "localhost",
@@ -34,6 +41,15 @@ db.Cart = CartModel(sequelize, DataTypes);
 db.CartItem = CartItemModel(sequelize, DataTypes);
 db.Order = OrderModel(sequelize, DataTypes);
 db.OrderItem = OrderItemModel(sequelize, DataTypes);
+db.Address = AddressModel(sequelize, DataTypes);
+db.PharmacyWithdrawl = PharmacyWithdrawlModel(sequelize, DataTypes);
+db.PaymentMethod = PaymentMethodModel(sequelize, DataTypes);
+db.RoleRequest = RoleRequestModel(sequelize, DataTypes);
+db.RequestDocument = RequestDocumentModel(sequelize, DataTypes);
+db.RoleRequest = RoleRequestModel(sequelize, DataTypes);
+db.RequestDocument = RequestDocumentModel(sequelize, DataTypes);
+db.PlatformConfig = PlatformConfigModel(sequelize, DataTypes);
+db.NotificationConfig = NotificationPreferenceModel(sequelize, DataTypes);
 
 // user and pharmacy
 db.User.hasMany(db.Pharmacy, { foreignKey: "userId", onDelete: "CASCADE" });
@@ -76,6 +92,47 @@ db.OrderItem.belongsTo(db.Order, { foreignKey: "orderId" });
 // medicine and orderitem
 db.Medicine.hasMany(db.OrderItem, { foreignKey: "medicineId" });
 db.OrderItem.belongsTo(db.Medicine, { foreignKey: "medicineId" });
+
+// user and address
+db.User.hasMany(db.Address, { foreignKey: "userId", onDelete: "CASCADE" });
+db.Address.belongsTo(db.User, { foreignKey: "userId" });
+
+// address and order
+db.Address.hasMany(db.Order, { foreignKey: "addressId", onDelete: "SET NULL" });
+db.Order.belongsTo(db.Address, { foreignKey: "addressId" });
+
+// user and pharmacy withdrawl
+db.User.hasMany(db.PharmacyWithdrawl, {
+  foreignKey: "userId",
+  onDelete: "CASCADE",
+});
+db.PharmacyWithdrawl.belongsTo(db.User, { foreignKey: "userId" });
+
+// user and paymentMethod
+db.User.hasMany(db.PaymentMethod, {
+  foreignKey: "userId",
+  onDelete: "CASCADE",
+});
+db.PaymentMethod.belongsTo(db.User, { foreignKey: "userId" });
+
+// user and rolerequest
+db.User.hasMany(db.RoleRequest, {
+  foreignKey: "userId",
+  onDelete: "CASCADE",
+  as: "roleRequests",
+});
+db.RoleRequest.belongsTo(db.User, { foreignKey: "userId", as: "user" });
+
+// rolerequest and requestdocument
+db.RoleRequest.hasMany(db.RequestDocument, {
+  foreignKey: "roleRequestId",
+  onDelete: "CASCADE",
+  as: "documents",
+});
+db.RequestDocument.belongsTo(db.RoleRequest, {
+  foreignKey: "roleRequestId",
+  as: "roleRequest",
+});
 
 try {
   await sequelize.sync({
