@@ -40,6 +40,13 @@ export default (sequelize, DataTypes) => {
           isIn: [["admin", "patient", "doctor", "pharmacist"]],
         },
       },
+      status: {
+        type: DataTypes.ENUM("active", "inactive", "suspended", "pending"),
+        defaultValue: "active",
+        validate: {
+          isIn: [["active", "inactive", "suspended", "pending"]],
+        },
+      },
       createdAt: {
         type: DataTypes.DATE,
         field: "created_at",

@@ -28,7 +28,16 @@ export default (sequelize, DataTypes) => {
           key: "pharmacy_id",
         },
       },
-
+      addressId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: "address_id",
+        references: {
+          model: "addresses",
+          key: "address_id",
+        },
+        onDelete: "SET NULL",
+      },
       status: {
         type: DataTypes.ENUM(
           "pending",
@@ -40,7 +49,16 @@ export default (sequelize, DataTypes) => {
         ),
         defaultValue: "pending",
       },
-
+      withdrawlStatus: {
+        type: DataTypes.ENUM(
+          "requested",
+          "processing",
+          "completed",
+          "rejected",
+          "none"
+        ),
+        defaultValue: "none",
+      },
       totalPrice: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,

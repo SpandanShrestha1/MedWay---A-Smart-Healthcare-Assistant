@@ -24,9 +24,7 @@ export default (sequelize, DataTypes) => {
       tableName: "carts",
       timestamps: true,
       underscored: true,
-      indexes: [
-        { unique: true, fields: ["user_id"] }, // one cart per user
-      ],
+      indexes: [{ unique: true, fields: ["user_id"] }],
     }
   );
 
