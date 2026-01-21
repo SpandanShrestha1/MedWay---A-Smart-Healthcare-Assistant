@@ -1,8 +1,8 @@
-import { MedicineFilterOptions } from "@/config";
+import { MedicineFilterOptions } from "../../config/index";
 import { Fragment } from "react";
 import { Label } from "../../components/ui/label";
 import { Checkbox } from "../../components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "../../components/ui/separator";
 import { Button } from "../../components/ui/button";
 
 export function PharmacistMedicineFilter({ filters, handleFilter }) {

@@ -17,6 +17,7 @@ import { useSearchParams } from "react-router-dom";
 import {
   fetchAllFilteredOrders,
   fetchOrderDetails,
+  resetPharmacistOrderDetails,
 } from "../../store/pharmacist/orders-slice";
 import { Badge } from "../ui/badge";
 import { OrderFilter } from "./filter";
@@ -45,6 +46,7 @@ function PharmacistOrdersView() {
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const statusSearchParam = searchParams.get("status");
+  const [openOrderId, setOpenOrderId] = useState(null);
 
   function handleFilter(section, option) {
     setFilters((prev) => {
@@ -88,6 +90,8 @@ function PharmacistOrdersView() {
       const createQueryString = createSearchParamsHelper(filters);
       setSearchParams(new URLSearchParams(createQueryString));
     }
+    setOpenOrderId(null);
+    dispatch(resetPharmacistOrderDetails());
   }, [filters]);
   useEffect(() => {
     if (pharmacistOrderList && pharmacistOrderList.length > 0) {
@@ -151,11 +155,26 @@ function PharmacistOrdersView() {
                   </TableCell>
                   <TableCell>{order.totalPrice}</TableCell>
                   <TableCell>
-                    <Button
-                      onClick={() => handleFetchOrderDetails(order.orderId)}
+                    <Dialog
+                      open={openOrderId === order.orderId}
+                      onOpenChange={(open) => {
+                        if (!open) {
+                          setOpenOrderId(null);
+                          dispatch(resetPharmacistOrderDetails());
+                        }
+                      }}
                     >
-                      View Details
-                    </Button>
+                      <Button
+                        onClick={() => {
+                          setOpenOrderId(order.orderId);
+                          handleFetchOrderDetails(order.orderId);
+                        }}
+                      >
+                        View Details
+                      </Button>
+
+                      <OrderDetailsView orderDetails={pharmacistOrderDetails} />
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))

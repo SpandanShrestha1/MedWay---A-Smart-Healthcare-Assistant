@@ -1,7 +1,9 @@
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
+import { Edit, Trash2 } from "lucide-react";
+import { Badge } from "../ui/badge";
 
-function PharmacistMedicineTitle({
+export default function PharmacistMedicineTitle({
   medicine,
   setFormData,
   setOpenCreateProductsDialog,
@@ -11,74 +13,75 @@ function PharmacistMedicineTitle({
   const isLowStock = medicine.stockQuantity < 100;
 
   return (
-    <Card className="w-full max-w-md mx-auto mb-4">
-      <div>
-        <div className="relative">
-          <img
-            src={medicine?.image}
-            alt={medicine?.medicineName}
-            className="w-full h-[250px] object-cover rounded-t-lg"
-          />
+    <Card className="w-full p-4 mb-3">
+      <div className="grid grid-cols-4 items-center gap-4">
+        {/* Title & Price */}
+        <div className="flex flex-col">
+          <p className="font-semibold text-lg">{medicine.medicineName}</p>
+          <p>Price</p>
+          <p className="text-sm text-gray-600">Rs. {medicine.price}</p>
         </div>
 
-        <CardContent>
-          <h2 className="text-xl font-bold mb-2">{medicine?.medicineName}</h2>
-          <div className="flex flex-wrap gap-2 mb-2">
-            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-              {medicine?.brand}
+        {/* Category & Stock */}
+        <div className="flex flex-col text-center">
+          {/*
+                    <p className="text-sm capitalize text-gray-700 rounded-2xl bg-gray-100 px-3 py-1 inline-block">
+                        {medicine.category}
+                    </p>
+                    */}
+          <Badge variant="outline">{medicine.category}</Badge>
+          <p
+            className={`text-sm font-semibold ${
+              medicine.stockQuantity < 10 ? "text-red-500" : "text-black-600"
+            }`}
+          >
+            Stock: {medicine.stockQuantity} units
+          </p>
+          <p
+            className={`text-sm font-semibold ${
+              medicine.stockQuantity < 10 ? "text-red-500" : "text-black-600"
+            }`}
+          >
+            <span>
+              {medicine.stockQuantity > 10 ? "In stock" : "Out of stock"}
             </span>
-            <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-              {medicine?.category}
-            </span>
-            {medicine.isPrescriptionRequired && (
-              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                Prescription Required
-              </span>
-            )}
-            <span
-              className={`px-2 py-1 rounded-full text-sm ${
-                isLowStock
-                  ? "bg-orange-100 text-orange-800"
-                  : "bg-green-100 text-green-800"
-              }`}
-            >
-              {isLowStock ? "Low Stock" : "In Stock"}
-            </span>
-          </div>
-          <p className="text-gray-600 mb-2">{medicine?.description}</p>
-          <div className="flex flex-wrap justify-between mb-2 text-sm text-gray-700">
-            <div>Stock: {medicine?.stockQuantity} units</div>
-            <div>Min Stock: 100 units</div>
-            <div>
-              Expiry: {new Date(medicine?.expiryDate).toLocaleDateString()}
-            </div>
-            <div>Status: {medicine?.status}</div>
-          </div>
-          <div className="text-lg font-semibold text-primary mb-2">
-            Rs.{medicine?.price}
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between">
+          </p>
+        </div>
+        <div className="flex flex-col text-center">
+          <p className="text-sm capitalize text-gray-700">Expiry</p>
+          <p
+            className={`text-sm font-semibold text-black-600
+        }`}
+          >
+            Date: {medicine.expiryDate.split("T")[0]}
+          </p>
+        </div>
+
+        {/* RIGHT COLUMN - Edit & Delete */}
+        <div className="flex justify-end gap-2">
           <Button
+            size="sm"
+            className="flex items-center gap-1 bg-gray-100 text-black"
             onClick={() => {
+              setCurrentEditedId(medicine.medicineId);
               setOpenCreateProductsDialog(true);
-              setCurrentEditedId(medicine?.medicineId);
               setFormData(medicine);
             }}
           >
+            <Edit className="w-4 h-4" />
             Edit
           </Button>
 
           <Button
-            variant="destructive"
-            onClick={() => handleDelete(medicine?.medicineId)}
+            size="sm"
+            className="flex items-center gap-1 bg-gray-100 text-black"
+            onClick={() => handleDelete(medicine.medicineId)}
           >
+            <Trash2 className="w-4 h-4" />
             Delete
           </Button>
-        </CardFooter>
+        </div>
       </div>
     </Card>
   );
 }
-
-export default PharmacistMedicineTitle;

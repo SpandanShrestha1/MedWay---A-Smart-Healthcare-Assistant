@@ -21,6 +21,8 @@ import PharmacistDashboard from "./pages/pharmacist-view/dashboard";
 import Pharmacy from "./pages/pharmacist-view/pharmacy";
 import PharmacistMedicines from "./pages/pharmacist-view/medicines";
 import PharmacistOrders from "./pages/pharmacist-view/orders";
+import Earning from "./pages/pharmacist-view/earning";
+import Revenues from "./pages/pharmacist-view/revenues";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -73,6 +75,8 @@ function App() {
           <Route path="pharmacy" element={<Pharmacy />} />
           <Route path="medicines" element={<PharmacistMedicines />} />
           <Route path="orders" element={<PharmacistOrders />} />
+          <Route path="earning" element={<Earning />} />
+          <Route path="revenues" element={<Revenues />} />
         </Route>
       </Routes>
     </div>

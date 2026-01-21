@@ -1,268 +1,412 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
 import {
-  Heart,
-  Pill,
-  Package,
-  TrendingUp,
-  MessageSquare,
-  LogOut,
-  Menu,
-  X,
-  Clock,
-  DollarSign,
-  AlertCircle,
-  Plus,
-  CheckCircle2,
-} from "lucide-react";
+  fetchDashboardStats,
+  fetchRecentOrders,
+  fetchLowStock,
+} from "../../store/pharmacist/dashboard-slice";
+import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
 
-export default function PharmacistDashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
+import { Badge } from "../../components/ui/badge";
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../../components/ui/card";
+import { ShoppingCart } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
+import { DollarSign } from "lucide-react";
+import { Box } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import { IndianRupee } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import { Progress } from "../../components/ui/progress";
+
+export default function Dashboard() {
+  const dispatch = useDispatch();
+  const { stats, recentOrders, lowStock } = useSelector(
+    (state) => state.dashboard
+  );
+
+  const recentOrders1 = [
+    {
+      id: "ORD-2024-001",
+      customer: "John Doe",
+      items: 3,
+      total: "NPR 850",
+      time: "10 mins ago",
+      status: "pending",
+    },
+    {
+      id: "ORD-2024-002",
+      customer: "Sarah Smith",
+      items: 2,
+      total: "NPR 620",
+      time: "25 mins ago",
+      status: "processing",
+    },
+    {
+      id: "ORD-2024-003",
+      customer: "Mike Johnson",
+      items: 5,
+      total: "NPR 1240",
+      time: "1 hour ago",
+      status: "ready",
+    },
+  ];
+
+  const lowStock1 = [
+    { name: "Paracetamol 500mg", min: 100, qty: 45 },
+    { name: "Amoxicillin 250mg", min: 80, qty: 30 },
+    { name: "Ibuprofen 400mg", min: 120, qty: 60 },
+  ];
+  useEffect(() => {
+    console.log(stats);
+    dispatch(fetchDashboardStats());
+    dispatch(fetchRecentOrders());
+    dispatch(fetchLowStock());
+
+    const interval = setInterval(() => {
+      dispatch(fetchDashboardStats());
+      dispatch(fetchRecentOrders());
+      dispatch(fetchLowStock());
+    }, 7000); // auto refresh every 7s
+
+    return () => clearInterval(interval);
+  }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex">
-        <main className="flex-1 p-4 md:p-8">
-          <section className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              Welcome to MediWay Pharmacy
-            </h1>
-            <p className="text-foreground/60">
-              Manage inventory, orders, and maximize your pharmacy operations
-            </p>
-          </section>
+    <div className="p-6 space-y-6">
+      {stats && (
+        <div className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg shadow-sm">
+            <CardHeader>
+              <CardDescription className="text-gray-800 font-medium">
+                Pending Orders
+              </CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums">
+                {stats.pendingOrders}
+              </CardTitle>
+              <CardAction>
+                <ShoppingCart className="w-6 h-6 text-green-400" />
+              </CardAction>
+            </CardHeader>
+            <CardFooter className="flex-col items-start gap-1.5 text-sm">
+              {/*
+      <div className="line-clamp-1 flex gap-2 font-medium">
+        Trending up this month <IconTrendingUp className="size-4" />
+      </div>
+      */}
+              <div className="text-muted-foreground">check your orders</div>
+            </CardFooter>
+          </Card>
 
-          <div className="grid md:grid-cols-4 gap-4 mb-8">
-            {[
-              {
-                label: "Total Medicines",
-                value: "1,247",
-                icon: <Pill className="w-8 h-8" />,
-              },
-              {
-                label: "Pending Orders",
-                value: "12",
-                icon: <Package className="w-8 h-8" />,
-              },
-              {
-                label: "Today's Revenue",
-                value: "Rs 8,450",
-                icon: <DollarSign className="w-8 h-8" />,
-              },
-              {
-                label: "Low Stock Items",
-                value: "8",
-                icon: <AlertCircle className="w-8 h-8" />,
-              },
-            ].map((stat, idx) => (
-              <div
-                key={idx}
-                className="bg-card p-6 rounded-lg border border-border hover:border-primary/50 transition"
-              >
-                <div
-                  className={`mb-2 ${
-                    idx === 3 ? "text-destructive" : "text-primary"
-                  }`}
-                >
-                  {stat.icon}
+          <Card className="bg-gradient-to-r from-red-100 to-red-50 p-4 rounded-lg shadow-sm">
+            <CardHeader>
+              <CardDescription className="text-gray-800 font-medium">
+                Low Stock Items
+              </CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums">
+                {stats.lowStockCount}
+              </CardTitle>
+              <CardAction>
+                <TriangleAlert className="w-6 h-6 text-yellow-400" />
+              </CardAction>
+            </CardHeader>
+            <CardFooter className="flex-col items-start gap-1.5 text-sm">
+              {/*
+      <div className="line-clamp-1 flex gap-2 font-medium">
+        Down 20% this period <IconTrendingDown className="size-4" />
+      </div>
+      */}
+              <div className="text-muted-foreground">Need restock soon</div>
+            </CardFooter>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg shadow-sm">
+            <CardHeader>
+              <CardDescription className="text-gray-800 font-medium">
+                Today's Sales
+              </CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums">
+                {stats.todaySalesCount}
+              </CardTitle>
+              <CardAction>
+                <IndianRupee className="w-6 h-6 text-green-400" />
+              </CardAction>
+            </CardHeader>
+            <CardFooter className="flex-col items-start gap-1.5 text-sm">
+              {/*
+      <div className="line-clamp-1 flex gap-2 font-medium">
+        Strong user retention <IconTrendingUp className="size-4" />
+      </div>
+       */}
+              <div className="text-muted-foreground">
+                {stats.salesChangePercent}% from yesterday
+              </div>
+            </CardFooter>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg shadow-sm">
+            <CardHeader>
+              <CardDescription className="text-gray-800 font-medium">
+                Total Items
+              </CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums">
+                4.5%
+              </CardTitle>
+              <CardAction>
+                <Box className="w-6 h-6 text-green-400" />
+              </CardAction>
+            </CardHeader>
+            <CardFooter className="flex-col items-start gap-1.5 text-sm">
+              {/*
+      <div className="line-clamp-1 flex gap-2 font-medium">
+        Steady performance increase <IconTrendingUp className="size-4" />
+      </div>
+      */}
+              <div className="text-muted-foreground">Across 7 catgeories</div>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
+      {/*
+      <h2 className="text-2xl font-semibold mb-4">Dashboard</h2>
+
+
+      {stats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatCard title="Pending Orders" value={stats.pendingOrders} />
+          <StatCard title="Low Stock" value={stats.lowStockCount} />
+          <StatCard title="Sales Today" value={stats.todaySalesCount} />
+          <StatCard title="Total Medicines" value={stats.totalItemsCount} />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+
+        <div className="bg-white shadow-md rounded-xl p-4 md:col-span-2">
+          <h3 className="text-lg font-semibold mb-3">Recent Orders</h3>
+
+          {recentOrders?.length === 0 && (
+            <p className="text-gray-500 text-sm">No recent orders</p>
+          )}
+
+          <div className="space-y-3">
+            {recentOrders?.map(order => (
+              <div key={order.orderId} className="border-b pb-2">
+                <div className="flex justify-between">
+                  <p className="font-medium">#{order.orderId}</p>
+                  <span className="text-xs text-gray-500">
+                    {moment(order.timeAgo).fromNow()}
+                  </span>
                 </div>
-                <p className="text-sm text-foreground/60 mb-1">{stat.label}</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stat.value}
+
+                <p className="text-sm">
+                  Patient: <span className="ml-1 font-medium">{order.patientUserName}</span>
+                </p>
+
+                <p className="text-sm">
+                  Status:
+                  <span className="ml-1 font-medium text-blue-600">{order.status}</span>
+                </p>
+                <p className="text-sm">Items: {order.itemsCount}</p>
+                <p className="text-sm font-semibold text-green-600">
+                  Rs. {order.totalPrice}
                 </p>
               </div>
             ))}
           </div>
 
-          <section className="bg-card rounded-lg border border-border p-6 mb-8">
-            <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-              <Package className="w-6 h-6 text-primary" />
-              Pending Orders
-            </h2>
-            <div className="space-y-4">
-              {[
-                {
-                  id: "ORD-001",
-                  patient: "Sarah Johnson",
-                  medicines: "3 items",
-                  amount: "Rs 2,450",
-                  time: "2 hours ago",
-                  status: "pending",
-                },
-                {
-                  id: "ORD-002",
-                  patient: "Michael Chen",
-                  medicines: "2 items",
-                  amount: "Rs 1,820",
-                  time: "4 hours ago",
-                  status: "processing",
-                },
-                {
-                  id: "ORD-003",
-                  patient: "Emily Rodriguez",
-                  medicines: "5 items",
-                  amount: "Rs 3,900",
-                  time: "6 hours ago",
-                  status: "ready",
-                },
-                {
-                  id: "ORD-004",
-                  patient: "James Wilson",
-                  medicines: "2 items",
-                  amount: "Rs 1,280",
-                  time: "1 day ago",
-                  status: "pending",
-                },
-              ].map((order, idx) => (
+
+        </div>
+
+        <div className="bg-white shadow-md rounded-xl p-4">
+          <h3 className="text-lg font-semibold text-red-600 mb-3">Low Stock Alerts</h3>
+
+          {lowStock?.length === 0 && (
+            <p className="text-gray-500 text-sm">No low stock medicines</p>
+          )}
+
+          <ul className="space-y-2">
+            {Array.isArray(lowStock) && lowStock.map(item => (
+              <li key={item.medicineId} className="flex justify-between text-sm">
+                <span>{item.medicineName}</span>
+                <span className="font-bold text-red-600">
+                  {item.stockQuantity}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      */}
+
+      {/* ==== Recent Orders & Low Stock Row ==== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+        {/* Recent Orders */}
+        <Card className="shadow-sm">
+          <CardHeader className="flex justify-between items-center">
+            <CardTitle className="text-lg font-semibold">
+              Recent Orders
+            </CardTitle>
+            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+              3 New
+            </span>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {recentOrders.map((order, index) => {
+              const statusClass =
+                order.status === "pending"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : order.status === "processing"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-green-100 text-green-700";
+
+              return (
                 <div
-                  key={idx}
-                  className="flex items-center justify-between p-4 bg-background rounded-lg border border-border hover:border-primary/50 transition"
+                  key={index}
+                  className="border rounded-lg p-4 flex justify-between items-center hover:bg-gray-50"
                 >
                   <div>
-                    <p className="font-semibold text-foreground">
-                      {order.id} - {order.patient}
-                    </p>
-                    <p className="text-sm text-foreground/60 flex gap-4 mt-1">
-                      <span>{order.medicines}</span>
-                      <span>{order.amount}</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" /> {order.time}
-                      </span>
-                    </p>
+                    <p className="font-medium">{order.orderId}</p>
+                    <div className="flex items-center space-x-2 text-gray-500 text-sm mt-1">
+                      <span>{order.patientUserName}</span>
+                      <span>•</span>
+                      <span>{order.itemsCount} items</span>
+                      <span>•</span>
+                      <span>{order.totalPrice}</span>
+                      <span>•</span>
+                      <span>{moment(order.timeAgo).fromNow()}</span>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
+
+                  <div className="flex items-center gap-2">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        order.status === "ready"
-                          ? "bg-secondary/20 text-secondary"
-                          : order.status === "processing"
-                          ? "bg-primary/20 text-primary"
-                          : "bg-muted text-foreground/60"
-                      }`}
+                      className={`text-xs px-2 py-1 rounded-full capitalize ${statusClass}`}
                     >
                       {order.status}
                     </span>
-                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition text-sm">
-                      Update
-                    </button>
+                    <Button size="sm">Process</Button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </section>
+              );
+            })}
+            <Button variant="link" className="w-full text-center">
+              View All Orders
+            </Button>
+          </CardContent>
+        </Card>
 
-          <section className="bg-card rounded-lg border border-border p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <AlertCircle className="w-6 h-6 text-destructive" />
-                Low Stock Medicines
-              </h2>
-              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition text-sm flex items-center gap-2">
-                <Plus className="w-4 h-4" /> Reorder
-              </button>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-background">
-                  <tr className="border-b border-border">
-                    <th className="px-4 py-3 text-left text-foreground/60 font-medium">
-                      Medicine Name
-                    </th>
-                    <th className="px-4 py-3 text-left text-foreground/60 font-medium">
-                      Current Stock
-                    </th>
-                    <th className="px-4 py-3 text-left text-foreground/60 font-medium">
-                      Min. Required
-                    </th>
-                    <th className="px-4 py-3 text-left text-foreground/60 font-medium">
-                      Unit Price
-                    </th>
-                    <th className="px-4 py-3 text-left text-foreground/60 font-medium">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    {
-                      name: "Aspirin 500mg",
-                      stock: "15",
-                      min: "50",
-                      price: "Rs 5",
-                    },
-                    {
-                      name: "Amoxicillin 250mg",
-                      stock: "22",
-                      min: "100",
-                      price: "Rs 12",
-                    },
-                    {
-                      name: "Metformin 1000mg",
-                      stock: "8",
-                      min: "75",
-                      price: "Rs 8",
-                    },
-                    {
-                      name: "Omeprazole 20mg",
-                      stock: "30",
-                      min: "80",
-                      price: "Rs 15",
-                    },
-                    {
-                      name: "Paracetamol 650mg",
-                      stock: "5",
-                      min: "200",
-                      price: "Rs 3",
-                    },
-                    {
-                      name: "Ibuprofen 400mg",
-                      stock: "18",
-                      min: "60",
-                      price: "Rs 6",
-                    },
-                    {
-                      name: "Cetirizine 10mg",
-                      stock: "25",
-                      min: "90",
-                      price: "Rs 4",
-                    },
-                    {
-                      name: "Atorvastatin 20mg",
-                      stock: "12",
-                      min: "55",
-                      price: "Rs 14",
-                    },
-                  ].map((med, idx) => (
-                    <tr
-                      key={idx}
-                      className="border-b border-border hover:bg-background/50 transition"
-                    >
-                      <td className="px-4 py-4 text-foreground">{med.name}</td>
-                      <td className="px-4 py-4">
-                        <span className="text-destructive font-medium">
-                          {med.stock} units
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-foreground/60">
-                        {med.min} units
-                      </td>
-                      <td className="px-4 py-4 text-foreground/60">
-                        {med.price}
-                      </td>
-                      <td className="px-4 py-4">
-                        <button className="text-primary hover:text-primary/80 font-medium transition">
-                          Reorder
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </main>
+        {/* Low Stock Alerts */}
+        <Card className="shadow-sm">
+          <CardHeader className="flex items-center gap-2">
+            <AlertTriangle className="text-yellow-600" size={18} />
+            <CardTitle className="text-lg font-semibold">
+              Low Stock Alerts
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {lowStock.map((item, index) => {
+              const percentage = (item.stockQuantity / item.min) * 100;
+              return (
+                <div key={index}>
+                  <div className="flex justify-between text-sm font-medium mb-1">
+                    <span>{item.medicineName}</span>
+                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
+                      {item.stockQuantity} left
+                    </span>
+                  </div>
+                  <Progress value={percentage} className="h-2" />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Minimum required: {item.min} units
+                  </p>
+                </div>
+              );
+            })}
+            <Button className="w-full" variant="secondary">
+              Manage Inventory
+            </Button>
+          </CardContent>
+        </Card>
       </div>
+
+      {/*navigating to other pages */}
+      <div className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg shadow-sm">
+          <CardHeader className="flex flex-col items-center text-center">
+            <CardAction className="flex justify-center w-full mt-2">
+              <ShoppingCart className="w-12 h-12 text-green-400" />
+            </CardAction>
+            <CardTitle className="text-2xl font-semibold tabular-nums">
+              <h1>Inventory</h1>
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className="flex flex-col items-center gap-1.5 text-sm text-center">
+            <div className="text-muted-foreground">Manage stock & pricing</div>
+          </CardFooter>
+        </Card>
+
+        <Card className="bg-gradient-to-r from-red-100 to-red-50 p-4 rounded-lg shadow-sm">
+          <CardHeader className="flex flex-col items-center text-center">
+            <CardAction className="flex justify-center w-full mt-2">
+              <TriangleAlert className="w-12 h-12 text-yellow-400" />
+            </CardAction>
+            <CardTitle className="text-2xl font-semibold tabular-nums">
+              Orders
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className="flex flex-col items-center gap-1.5 text-sm text-center">
+            <div className="text-muted-foreground">Process & track orders</div>
+          </CardFooter>
+        </Card>
+
+        <Card className="bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg shadow-sm">
+          <CardHeader className="flex flex-col items-center text-center">
+            <CardAction className="flex justify-center w-full mt-2">
+              <DollarSign className="w-12 h-12 text-green-400" />
+            </CardAction>
+            <CardTitle className="text-2xl font-semibold tabular-nums">
+              Sales Report
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className="flex flex-col items-center gap-1.5 text-sm text-center">
+            <div className="text-muted-foreground">View analytics & trends</div>
+          </CardFooter>
+        </Card>
+
+        <Card className="bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg shadow-sm">
+          <CardHeader className="flex flex-col items-center text-center">
+            <CardAction className="flex justify-center w-full mt-2">
+              <Box className="w-12 h-12 text-green-400" />
+            </CardAction>
+            <CardTitle className="text-2xl font-semibold tabular-nums">
+              Revenue
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className="flex flex-col items-center gap-1.5 text-sm text-center">
+            <div className="text-muted-foreground">Track earnings</div>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// Small Stat Card Component
+function StatCard({ title, value }) {
+  return (
+    <div className="bg-white shadow-md rounded-xl p-4 text-center">
+      <h3 className="text-sm font-medium text-gray-500">{title}</h3>
+      <p className="text-3xl font-bold mt-2">{value}</p>
     </div>
   );
 }

@@ -30,4 +30,16 @@ export const pharmacistSidebarMenuItems = [
     path: "/pharmacist/orders",
     icons: <ShoppingCart />,
   },
+  {
+    id: "earning",
+    label: "Track Earning",
+    path: "/pharmacist/earning",
+    icons: <ShoppingCart />,
+  },
+  {
+    id: "revenues",
+    label: "Revenue & Analytics",
+    path: "/pharmacist/revenues",
+    icons: <ChartNoAxesCombined />,
+  },
 ];

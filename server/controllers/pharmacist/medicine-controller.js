@@ -369,3 +369,37 @@ export const deleteMedicine = async (req, res) => {
     });
   }
 };
+
+// search medicines
+export const searchMedicines = async (req, res) => {
+  try {
+    const { name } = req.query;
+    const { pharmacistId } = req.params;
+
+    if (!pharmacistId) {
+      return res.status(400).json({
+        success: false,
+        message: "Pharmacist ID is required",
+      });
+    }
+
+    const medicines = await Medicine.findAll({
+      where: {
+        pharmacistId,
+        medicineName: { [Op.like]: `%${name}%` },
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      success: true,
+      data: medicines,
+    });
+  } catch (e) {
+    console.log();
+    res.status(500).json({
+      success: false,
+      message: "Error occured while searching medicines",
+    });
+  }
+};

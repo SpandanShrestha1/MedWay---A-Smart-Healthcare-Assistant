@@ -1,6 +1,7 @@
 import { logoutUser } from "../../store/auth-slice";
 import { useDispatch } from "react-redux";
 import { Button } from "../ui/button";
+import { Menu } from "lucide-react";
 
 function PharmacistHeader({ setOpen }) {
   const dispatch = useDispatch();
@@ -9,9 +10,14 @@ function PharmacistHeader({ setOpen }) {
   }
   return (
     <header className="flex items-center justify-between px-4 py-3 bg-background border-b">
-      <Button onClick={() => setOpen(true)} className="lg:hidden sm:block">
+      <dir
+        onClick={() => setOpen(true)}
+        className="lg:hidden sm:block"
+        size="icon"
+      >
+        <Menu className="h-6 w-6" />
         <span className="sr-only">Toggle Menu</span>
-      </Button>
+      </dir>
       <div className="flex flex-1 justify-end">
         <Button
           onClick={handleLogout}

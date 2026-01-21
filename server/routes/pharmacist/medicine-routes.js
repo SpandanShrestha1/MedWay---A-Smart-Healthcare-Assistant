@@ -15,6 +15,7 @@ import {
   editMedicine,
   deleteMedicine,
   fetchAllMedicinesByPharmacist,
+  searchMedicines,
 } from "../../controllers/pharmacist/medicine-controller.js";
 import { upload } from "../../helpers/cloudinary.js";
 //const {upload} = require('../../helpers/cloudinary');
@@ -28,5 +29,6 @@ router.delete("/delete/:medicineId", deleteMedicine);
 router.get("/pharmacy/:pharmacistId", fetchAllMedicinesByPharmacist);
 router.get("/pharmacy/:userId/filter", getFilteredMedicinesByPharmacy);
 router.get("/all/", fetchAllMedicines);
+router.get("/search/:pharmacistId", searchMedicines);
 
 export default router;

@@ -6,6 +6,8 @@ import authRouter from "./routes/auth/auth-routes.js";
 import pharmacyRouter from "./routes/pharmacist/pharmacy-routes.js";
 import pharmaryMedicineRouter from "./routes/pharmacist/medicine-routes.js";
 import orderRouter from "./routes/pharmacist/order-routes.js";
+import dashboardRoutes from "./routes/pharmacist/dashboard-routes.js";
+import revenueRoutes from "./routes/pharmacist/revenue-routes.js";
 
 const app = express();
 const PORT = 5001;
@@ -14,7 +16,7 @@ const PORT = 5001;
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
-    methods: ["GET", "POST", "DELETE", "PUT"],
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
@@ -28,11 +30,14 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRouter);
 app.use("/api/pharmacy", pharmacyRouter);
 app.use("/api/pharmacymedicine", pharmaryMedicineRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/pharmacy/dashboard", dashboardRoutes);
+app.use("/api/pharmacy/revenue", revenueRoutes);
 
 app.get("/", (req, res) => {
   res.json({

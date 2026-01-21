@@ -8,7 +8,7 @@ export const PharmacyCard = ({
   handleEditPharmacy,
 }) => {
   return (
-    <Card className={"cursor-pointer border-[4px] border-black"}>
+    <Card className="cursor-pointer border-[4px] border-black-100 bg-gray-100">
       <CardContent>
         <Label>Pharmacy Name: {pharmacyInfo?.pharmacyName}</Label>
         <Label>Address: {pharmacyInfo?.address}</Label>
@@ -18,7 +18,7 @@ export const PharmacyCard = ({
           Delivery Available: {pharmacyInfo?.deliveryAvailable ? "Yes" : "No"}
         </Label>
       </CardContent>
-      <CardFooter className="p-3 flex justify-betweeen">
+      <CardFooter className="p-3 gap-4 flex justify-betweeen">
         <Button onClick={() => handleEditPharmacy(pharmacyInfo)}>Edit</Button>
         <Button onClick={() => handleDeletePharmacy(pharmacyInfo)}>
           Delete

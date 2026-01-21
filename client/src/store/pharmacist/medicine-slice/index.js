@@ -72,6 +72,18 @@ export const deleteMedicine = createAsyncThunk(
   }
 );
 
+export const pharamacistSearchMedicine = createAsyncThunk(
+  "/medicine/searchMedicine",
+  async ({ pharmacistId, name }) => {
+    const result = await axios.get(
+      `http://localhost:5001/api/pharmacymedicine/search/${pharmacistId}?name=${encodeURIComponent(
+        name
+      )}`
+    );
+    return result?.data;
+  }
+);
+
 export const fetchAllFilteredMedicines = createAsyncThunk(
   "/medicine/fetchFilteredMedicines",
   async ({ userId, filterParams }) => {
@@ -108,6 +120,17 @@ const PharmacistMedicineSlice = createSlice({
         state.medicineList = action.payload.data;
       })
       .addCase(fetchAllMedicinesByPharmacist.rejected, (state) => {
+        state.isLoading = false;
+        state.medicineList = [];
+      })
+      .addCase(pharamacistSearchMedicine.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(pharamacistSearchMedicine.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.medicineList = action.payload.data;
+      })
+      .addCase(pharamacistSearchMedicine.rejected, (state) => {
         state.isLoading = false;
         state.medicineList = [];
       });
