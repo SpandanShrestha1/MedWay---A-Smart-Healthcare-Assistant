@@ -8,6 +8,7 @@ import pharmaryMedicineRouter from "./routes/pharmacist/medicine-routes.js";
 import orderRouter from "./routes/pharmacist/order-routes.js";
 import dashboardRoutes from "./routes/pharmacist/dashboard-routes.js";
 import revenueRoutes from "./routes/pharmacist/revenue-routes.js";
+import earningRoutes from "./routes/pharmacist/earning-routes.js";
 
 const app = express();
 const PORT = 5001;
@@ -38,7 +39,7 @@ app.use("/api/pharmacymedicine", pharmaryMedicineRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/pharmacy/dashboard", dashboardRoutes);
 app.use("/api/pharmacy/revenue", revenueRoutes);
-
+app.use("/api/pharmacy/earning", earningRoutes);
 app.get("/", (req, res) => {
   res.json({
     message: "MedWay Server is running!",
